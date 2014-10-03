@@ -36,8 +36,10 @@
 /*
  * Our DDR memory always starts at 0x80000000 and U-Boot shall have
  * relocated itself to higher in memory by the time this value is used.
+ * However, set this to a 32MB offset to allow for easier Linux kernel
+ * booting as the default is often used as the kernel load address.
  */
-#define CONFIG_SYS_LOAD_ADDR		0x80000000
+#define CONFIG_SYS_LOAD_ADDR		0x82000000
 
 /*
  * Default to a quick boot delay.
@@ -151,6 +153,7 @@
 #define CONFIG_CMD_ASKENV
 #define CONFIG_CMD_ECHO
 #define CONFIG_CMD_BOOTZ
+#define CONFIG_SUPPORT_RAW_INITRD
 
 /*
  * Common filesystems support.  When we have removable storage we

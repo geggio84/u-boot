@@ -87,6 +87,7 @@
  */
 
 #include <common.h>
+#include <command.h>
 #include <version.h>
 #include <malloc.h>
 #include <linux/compiler.h>
@@ -1989,6 +1990,11 @@ static void *video_logo(void)
 	__maybe_unused int y_off = 0;
 	__maybe_unused ulong addr;
 	__maybe_unused char *s;
+	__maybe_unused char *c;
+	int argc;
+	char * argv[5];
+	ulong cycles = 0;
+	int repeatable;
 
 	splash_get_pos(&video_logo_xpos, &video_logo_ypos);
 
@@ -1998,6 +2004,17 @@ static void *video_logo(void)
 		splash_screen_prepare();
 		addr = simple_strtoul(s, NULL, 16);
 
+		c = getenv("load_splash");
+		if (c != NULL) {
+			argc = 2;
+			argv[0] = "run";
+			argv[1] = "load_splash";
+			cmd_process(0, argc, argv, &repeatable, &cycles);
+		}
+		else {
+			printf("Set 'load_splash' command to load BMP file");
+			return NULL;
+		}
 		if (video_display_bitmap(addr,
 					video_logo_xpos,
 					video_logo_ypos) == 0) {
