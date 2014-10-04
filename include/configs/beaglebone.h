@@ -62,6 +62,9 @@
 	"update_boot=run load_spl; run update_spl; run load_uboot; run update_uboot\0" \
 	"loadk=tftp ${loadaddr} ${bootfile}\0" \
 	"updatek=fatwrite mmc ${bootpart} ${loadaddr} ${bootfile} ${filesize}\0" \
+	"load_devicetree=tftp ${loadaddr} ${fdtfile}\0" \
+	"update_devicetree=fatwrite mmc ${bootpart} ${loadaddr} ${fdtfile} ${filesize}\0" \
+	"update_linux=run load_devicetree; run update_devicetree; run loadk; run updatek\0" \
 	"bootfile=uImage\0" \
 	"ethaddr=d4:94:a1:3b:5d:14\0" \
 	"ipaddr=192.168.85.129\0" \
@@ -147,7 +150,6 @@
 		"tftp ${fdtaddr} ${fdtfile}; " \
 		"run netargs; " \
 		"bootz ${loadaddr} - ${fdtaddr}\0" \
-	"fdtfile=am335x-bone.dtb\0" \
 	DFUARGS
 #endif
 
