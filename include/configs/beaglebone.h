@@ -43,6 +43,7 @@
 #ifndef CONFIG_SPL_BUILD
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"loadaddr=0x82000000\0" \
+	"kloadaddr=0x80008000\0" \
 	"fdtaddr=0x88000000\0" \
 	"fdt_high=0xffffffff\0" \
 	"boot_fdt=try\0" \
@@ -52,7 +53,16 @@
 	"bootpart=0:1\0" \
 	"bootdir=\0" \
 	"fdtdir=/dtbs\0" \
-	"bootfile=zImage\0" \
+	"splfile=MLO\0" \
+	"uboot_file=u-boot.img\0" \
+	"load_spl=tftp ${loadaddr} ${splfile}\0" \
+	"update_spl=fatwrite mmc ${bootpart} ${loadaddr} ${splfile} ${filesize}\0" \
+	"load_uboot=tftp ${loadaddr} ${uboot_file}\0" \
+	"update_uboot=fatwrite mmc ${bootpart} ${loadaddr} ${uboot_file} ${filesize}\0" \
+	"update_boot=run load_spl; run update_spl; run load_uboot; run update_uboot\0" \
+	"loadk=tftp ${loadaddr} ${bootfile}\0" \
+	"updatek=fatwrite mmc ${bootpart} ${loadaddr} ${bootfile} ${filesize}\0" \
+	"bootfile=uImage\0" \
 	"ethaddr=d4:94:a1:3b:5d:14\0" \
 	"ipaddr=192.168.85.129\0" \
 	"serverip=192.168.85.128\0" \
@@ -60,9 +70,10 @@
 	"gatewayip=192.168.85.1\0" \
 	"kern_mem=252M\0" \
 	"splashimage=0x8F000000\0" \
-	"splashfile=480x272-24bit.bmp\0" \
+	"splashfile=splash.bmp\0" \
+	"update_splash=tftp ${loadaddr} ${splashfile};fatwrite mmc ${bootpart} ${loadaddr} ${splashfile} ${filesize}\0" \
 	"load_splash=mmc rescan; load mmc ${bootpart} ${splashimage} ${splashfile}\0" \
-	"fdtfile=am335x-bone.dtb\0" \
+	"fdtfile=bone_printer.dtb\0" \
 	"console=serial\0" \
 	"console_linux=ttyO0,115200n8\0" \
 	"partitions=" \
@@ -90,21 +101,21 @@
 	"importbootenv=echo Importing environment from mmc ...; " \
 		"env import -t $loadaddr $filesize\0" \
 	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
-	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
+	"loadimage=load mmc ${bootpart} ${kloadaddr} ${bootdir}/${bootfile}\0" \
 	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
 	"mmcloados=run mmcargs addip; " \
 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
 			"if run loadfdt; then " \
-				"bootz ${loadaddr} - ${fdtaddr}; " \
+				"bootm ${kloadaddr} - ${fdtaddr}; " \
 			"else " \
 				"if test ${boot_fdt} = try; then " \
-					"bootz; " \
+					"bootm; " \
 				"else " \
 					"echo WARN: Cannot load the DT; " \
 				"fi; " \
 			"fi; " \
 		"else " \
-			"bootz; " \
+			"bootm; " \
 		"fi;\0" \
 	"mmcboot=mmc dev ${mmcdev}; " \
 		"if mmc rescan; then " \
