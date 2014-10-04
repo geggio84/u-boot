@@ -94,11 +94,10 @@
 #define LCD_INVERT_LINE_CLOCK			(1 << 21)
 #define LCD_INVERT_FRAME_CLOCK			(1 << 20)
 
-#define VIDEOMEMSIZE	(4*1024*1024)	/* 4 MB */
-#define VIDEOMEMOFFS	(((256*1024*1024)-VIDEOMEMSIZE)+0x80000000)
-
-static u_long videomemorysize = VIDEOMEMSIZE;
-static u_long videomem_offset = VIDEOMEMOFFS;
+#if defined(CONFIG_VIDEO_DA8XX_FB_MEMSIZE) && defined(CONFIG_VIDEO_DA8XX_FB_MEMADDR)
+static u_long videomemorysize = CONFIG_VIDEO_DA8XX_FB_MEMSIZE;
+static u_long videomem_offset = CONFIG_VIDEO_DA8XX_FB_MEMADDR;
+#endif
 
 /* Clock registers available only on Version 2 */
 #define  LCD_CLK_MAIN_RESET			(1 << 3)
