@@ -43,7 +43,6 @@
 #ifndef CONFIG_SPL_BUILD
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"loadaddr=0x82000000\0" \
-	"kloadaddr=0x80008000\0" \
 	"fdtaddr=0x88000000\0" \
 	"fdt_high=0xffffffff\0" \
 	"boot_fdt=try\0" \
@@ -65,7 +64,7 @@
 	"load_devicetree=tftp ${loadaddr} ${fdtfile}\0" \
 	"update_devicetree=fatwrite mmc ${bootpart} ${loadaddr} ${fdtfile} ${filesize}\0" \
 	"update_linux=run load_devicetree; run update_devicetree; run loadk; run updatek\0" \
-	"bootfile=uImage\0" \
+	"bootfile=zImage\0" \
 	"ethaddr=d4:94:a1:3b:5d:14\0" \
 	"ipaddr=192.168.85.129\0" \
 	"serverip=192.168.85.128\0" \
@@ -104,21 +103,21 @@
 	"importbootenv=echo Importing environment from mmc ...; " \
 		"env import -t $loadaddr $filesize\0" \
 	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
-	"loadimage=load mmc ${bootpart} ${kloadaddr} ${bootdir}/${bootfile}\0" \
+	"loadimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
 	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${fdtdir}/${fdtfile}\0" \
 	"mmcloados=run mmcargs addip; " \
 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
 			"if run loadfdt; then " \
-				"bootm ${kloadaddr} - ${fdtaddr}; " \
+				"bootz ${loadaddr} - ${fdtaddr}; " \
 			"else " \
 				"if test ${boot_fdt} = try; then " \
-					"bootm; " \
+					"bootz; " \
 				"else " \
 					"echo WARN: Cannot load the DT; " \
 				"fi; " \
 			"fi; " \
 		"else " \
-			"bootm; " \
+			"bootz; " \
 		"fi;\0" \
 	"mmcboot=mmc dev ${mmcdev}; " \
 		"if mmc rescan; then " \
