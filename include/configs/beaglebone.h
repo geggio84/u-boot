@@ -60,9 +60,9 @@
 	"update_uboot=fatwrite mmc ${bootpart} ${loadaddr} ${uboot_file} ${filesize}\0" \
 	"update_boot=run load_spl; run update_spl; run load_uboot; run update_uboot\0" \
 	"loadk=tftp ${loadaddr} ${bootfile}\0" \
-	"updatek=fatwrite mmc ${bootpart} ${loadaddr} ${bootfile} ${filesize}\0" \
+	"updatek=fatwrite mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile} ${filesize}\0" \
 	"load_devicetree=tftp ${loadaddr} ${fdtfile}\0" \
-	"update_devicetree=fatwrite mmc ${bootpart} ${loadaddr} ${fdtfile} ${filesize}\0" \
+	"update_devicetree=fatwrite mmc ${bootpart} ${loadaddr} ${fdtdir}/${fdtfile} ${filesize}\0" \
 	"update_linux=run load_devicetree; run update_devicetree; run loadk; run updatek\0" \
 	"bootfile=zImage\0" \
 	"ethaddr=d4:94:a1:3b:5d:14\0" \
