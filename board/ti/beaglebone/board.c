@@ -599,11 +599,13 @@ static int set_gpio(int gpio, int state)
 
 static int enable_backlight(void)
 {
-	//set_gpio(BOARD_LCD_POWER, 1);
-	//set_gpio(BOARD_BACK_LIGHT, 1);
-	set_gpio(115, 1); // GPIO3_19
 	set_gpio(50, 1); // GPIO1_18
-	//set_gpio(BOARD_TOUCH_POWER, 1);
+	return 0;
+}
+
+static int enable_lcd(void)
+{
+	set_gpio(115, 1); // GPIO3_19
 	return 0;
 }
 
@@ -649,8 +651,7 @@ int board_init(void)
 #if defined(CONFIG_VIDEO)
 	conf_disp_pll(24, 1);
 	da8xx_video_init(&lcd_panel, &lcd_cfg, 16);
-	//enable_pwm();
-	enable_backlight();
+	enable_lcd();
 #endif
 
 	return 0;
@@ -677,6 +678,9 @@ int board_late_init(void)
 #endif
 
 	setenv("stdout", "serial");
+#if defined(CONFIG_VIDEO)
+	enable_backlight();
+#endif
 
 	return 0;
 }
