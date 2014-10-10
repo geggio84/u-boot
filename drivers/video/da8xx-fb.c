@@ -94,6 +94,11 @@
 #define LCD_INVERT_LINE_CLOCK			(1 << 21)
 #define LCD_INVERT_FRAME_CLOCK			(1 << 20)
 
+#if defined(CONFIG_VIDEO_DA8XX_FB_MEMSIZE) && defined(CONFIG_VIDEO_DA8XX_FB_MEMADDR)
+static u_long videomemorysize = CONFIG_VIDEO_DA8XX_FB_MEMSIZE;
+static u_long videomem_offset = CONFIG_VIDEO_DA8XX_FB_MEMADDR;
+#endif
+
 /* Clock registers available only on Version 2 */
 #define  LCD_CLK_MAIN_RESET			(1 << 3)
 /* LCD Block */
@@ -949,10 +954,15 @@ void *video_hw_init(void)
 			da8xx_lcd_cfg->bpp;
 	par->vram_size = par->vram_size * LCD_NUM_BUFFERS / 8;
 
+#if defined(CONFIG_VIDEO_DA8XX_FB_MEMSIZE) && defined(CONFIG_VIDEO_DA8XX_FB_MEMADDR)
+	par->vram_virt = map_physmem(videomem_offset,videomemorysize,0);
+	par->vram_phys = videomem_offset;
+#else
 	par->vram_virt = malloc(par->vram_size);
-
 	par->vram_phys = (dma_addr_t) par->vram_virt;
-	debug("Requesting 0x%x bytes for framebuffer at 0x%x\n",
+#endif
+
+	printf("Requesting 0x%x bytes for framebuffer at 0x%x\n",
 		(unsigned int)par->vram_size,
 		(unsigned int)par->vram_virt);
 	if (!par->vram_virt) {
