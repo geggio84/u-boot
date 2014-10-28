@@ -30,6 +30,8 @@ static struct module_pin_mux uart0_pin_mux[] = {
 static struct module_pin_mux uart1_pin_mux[] = {
 	{OFFSET(uart1_rxd), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* UART1_RXD */
 	{OFFSET(uart1_txd), (MODE(0) | PULLUDEN)},		/* UART1_TXD */
+	{OFFSET(uart1_rtsn), (MODE(0) | PULLUDEN)},		/* UART1_RTSn */
+	{OFFSET(uart1_ctsn), (MODE(0) | PULLUP_EN | RXACTIVE)},		/* UART1_CTSn */
 	{-1},
 };
 
@@ -54,6 +56,40 @@ static struct module_pin_mux uart4_pin_mux[] = {
 static struct module_pin_mux uart5_pin_mux[] = {
 	{OFFSET(lcd_data9), (MODE(4) | PULLUP_EN | RXACTIVE)},	/* UART5_RXD */
 	{OFFSET(lcd_data8), (MODE(4) | PULLUDEN)},		/* UART5_TXD */
+	{-1},
+};
+
+static struct module_pin_mux stepper_pin_mux[] = {
+	{OFFSET(gpmc_ad3), (MODE(7) | PULLUP_EN)},		/* Enable X (gpio1_3) */
+	{OFFSET(gpmc_wen), (MODE(7) | PULLDOWN_EN)},	/* DIR X (gpio2_4) */
+	{OFFSET(gpmc_ad11), (MODE(7) | PULLDOWN_EN)},	/* STEP X (gpio0_27) */
+	{OFFSET(gpmc_ad7), (MODE(7) | PULLUP_EN)},		/* Enable Y (gpio1_7) */
+	{OFFSET(gpmc_ad8), (MODE(7) | PULLDOWN_EN)},	/* DIR Y (gpio0_22) */
+	{OFFSET(gpmc_ad12), (MODE(7) | PULLDOWN_EN)},	/* STEP Y (gpio1_12) */
+	{OFFSET(gpmc_ad2), (MODE(7) | PULLUP_EN)},		/* Enable Z (gpio1_2) */
+	{OFFSET(gpmc_ad10), (MODE(7) | PULLDOWN_EN)},	/* DIR Z (gpio0_26) */
+	{OFFSET(gpmc_ad9), (MODE(7) | PULLDOWN_EN)},	/* STEP Z (gpio0_23) */
+	{OFFSET(gpmc_ad6), (MODE(7) | PULLUP_EN)},		/* Enable E (gpio1_6) */
+	{OFFSET(gpmc_ad15), (MODE(7) | PULLDOWN_EN)},	/* DIR E (gpio1_15) */
+	{OFFSET(gpmc_be1n), (MODE(7) | PULLDOWN_EN)},	/* STEP E (gpio1_28) */
+	{-1},
+};
+
+static struct module_pin_mux endstop_pin_mux[] = {
+	{OFFSET(mcasp0_ahclkx), (MODE(7))},		/* END X1 (gpio3_21) */
+	{OFFSET(spi0_d0), (MODE(7))},		/* END X2 (gpio0_3) */
+	{OFFSET(gpmc_a1), (MODE(7))},		/* END Y1 (gpio1_17) */
+	{OFFSET(gpmc_a3), (MODE(7))},		/* END Y2 (gpio1_19) */
+	{OFFSET(gpmc_wpn), (MODE(7))},		/* END Z1 (gpio0_31) */
+	{OFFSET(spi0_sclk), (MODE(7))},		/* END Z2 (gpio0_2) */
+	{-1},
+};
+
+static struct module_pin_mux frontpanel_pin_mux[] = {
+	{OFFSET(gpmc_wait0), (MODE(7))},		/* ENC_SW (gpio0_30) */
+	{OFFSET(gpmc_a0), (MODE(7))},		/* ENC_A (gpio1_16) */
+	{OFFSET(xdma_event_intr1), (MODE(7))},		/* ENC_B (gpio0_20) */
+	/*{OFFSET(), (MODE(7)},*/		/* EXT_GPIO0 */
 	{-1},
 };
 
@@ -126,6 +162,16 @@ static struct module_pin_mux spi0_pin_mux[] = {
 	{OFFSET(spi0_d1), (MODE(0) | RXACTIVE | PULLUDEN)},	/* SPI0_D1 */
 	{OFFSET(spi0_cs0), (MODE(0) | RXACTIVE |
 			PULLUDEN | PULLUP_EN)},			/* SPI0_CS0 */
+	{-1},
+};
+
+static struct module_pin_mux spi1_pin_mux[] = {
+	{OFFSET(mcasp0_aclkx), (MODE(3) | RXACTIVE | PULLUDEN)},	/* SPI1_SCLK */
+	{OFFSET(mcasp0_fsx), (MODE(3) | RXACTIVE |
+			PULLUDEN | PULLUP_EN)},			/* SPI1_D0 */
+	{OFFSET(mcasp0_axr0), (MODE(3) | RXACTIVE | PULLUDEN)},	/* SPI1_D1 */
+	{OFFSET(mcasp0_ahclkr), (MODE(3) | RXACTIVE |
+			PULLUDEN | PULLUP_EN)},			/* SPI1_CS0 */
 	{-1},
 };
 
@@ -352,9 +398,25 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
 #if defined(CONFIG_VIDEO)
 	configure_module_pin_mux(LCD_pin_mux);
 #endif
-//#if defined(CONFIG_NOR) && !defined(CONFIG_NOR_BOOT)
-//		configure_module_pin_mux(bone_norcape_pin_mux);
-//#endif
+
+	/* SPI1 */
+	configure_module_pin_mux(spi1_pin_mux);
+
+	/* UART1 */
+	configure_module_pin_mux(uart1_pin_mux);
+
+	/* I2C1 */
+	configure_module_pin_mux(i2c1_pin_mux);
+
+	/* GPIO Stepper */
+	configure_module_pin_mux(stepper_pin_mux);
+
+	/* GPIO endstops */
+	configure_module_pin_mux(endstop_pin_mux);
+
+	/* FRONTPANEL */
+	configure_module_pin_mux(frontpanel_pin_mux);
+
 	} else if (board_is_gp_evm(header)) {
 		/* General Purpose EVM */
 		unsigned short profile = detect_daughter_board_profile();
