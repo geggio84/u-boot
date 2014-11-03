@@ -620,30 +620,30 @@ static int enable_lcd(void)
 	return 0;
 }
 
-// static int enable_pwm(void)
-// {
-	// struct pwmss_regs *pwmss = (struct pwmss_regs *)PWMSS0_BASE;
-	// struct pwmss_ecap_regs *ecap;
-	// int ticks = PWM_TICKS;
-	// int duty = PWM_DUTY;
+static int enable_pwm(void)
+{
+	struct pwmss_regs *pwmss = (struct pwmss_regs *)PWMSS0_BASE;
+	struct pwmss_ecap_regs *ecap;
+	int ticks = PWM_TICKS;
+	int duty = PWM_DUTY;
 
-	// ecap = (struct pwmss_ecap_regs *)AM33XX_ECAP0_BASE;
-	// /* enable clock */
-	// setbits_le32(&pwmss->clkconfig, ECAP_CLK_EN);
-	// /* TimeStam Counter register */
-	// writel(0xdb9, &ecap->tsctr);
-	// /* config period */
-	// writel(ticks - 1, &ecap->cap3);
-	// writel(ticks - 1, &ecap->cap1);
-	// setbits_le16(&ecap->ecctl2,
-		     // (ECTRL2_MDSL_ECAP | ECTRL2_SYNCOSEL_MASK | 0xd0));
-	// /* config duty */
-	// writel(duty, &ecap->cap2);
-	// writel(duty, &ecap->cap4);
-	// /* start */
-	// setbits_le16(&ecap->ecctl2, ECTRL2_CTRSTP_FREERUN);
-	// return 0;
-// }
+	ecap = (struct pwmss_ecap_regs *)AM33XX_ECAP0_BASE;
+	/* enable clock */
+	setbits_le32(&pwmss->clkconfig, ECAP_CLK_EN);
+	/* TimeStam Counter register */
+	writel(0xdb9, &ecap->tsctr);
+	/* config period */
+	writel(ticks - 1, &ecap->cap3);
+	writel(ticks - 1, &ecap->cap1);
+	setbits_le16(&ecap->ecctl2,
+		     (ECTRL2_MDSL_ECAP | ECTRL2_SYNCOSEL_MASK | 0xd0));
+	/* config duty */
+	writel(duty, &ecap->cap2);
+	writel(duty, &ecap->cap4);
+	/* start */
+	setbits_le16(&ecap->ecctl2, ECTRL2_CTRSTP_FREERUN);
+	return 0;
+}
 #endif
 
 /*
@@ -690,6 +690,7 @@ int board_late_init(void)
 
 #if defined(CONFIG_VIDEO)
 	setenv("stdout", "serial");
+	//enable_pwm();
 	enable_backlight();
 #endif
 

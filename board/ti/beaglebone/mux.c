@@ -309,7 +309,7 @@ static struct module_pin_mux LCD_pin_mux[] = {
 	{OFFSET(lcd_pclk), MODE(0) },       /* lcd_pclk */
 	{OFFSET(lcd_ac_bias_en), MODE(0) }, /* lcd_en */
 	{OFFSET(mcasp0_fsr), (MODE(7) | PULLUP_EN | RXACTIVE)}, /*LCD DISEN*/
-	{OFFSET(gpmc_a2), MODE(7) | PULLUDEN | RXACTIVE},
+	{OFFSET(gpmc_a2), MODE(7) | PULLUP_EN | RXACTIVE},
 	{-1},
 };
 #endif
