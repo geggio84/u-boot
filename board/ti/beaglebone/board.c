@@ -57,7 +57,7 @@ static const struct da8xx_panel lcd_panel = {
 static const struct display_panel disp_panel = {
 	WVGA,
 	32,
-	16,
+	24,
 	COLOR_ACTIVE,
 };
 
@@ -66,7 +66,7 @@ static const struct lcd_ctrl_config lcd_cfg = {
 	.ac_bias		= 255,
 	.ac_bias_intrpt		= 0,
 	.dma_burst_sz		= 16,
-	.bpp			= 16,
+	.bpp			= 32,
 	.fdd			= 0x80,
 	.tft_alt_mode		= 0,
 	.stn_565_mode		= 0,
@@ -661,7 +661,7 @@ int board_init(void)
 
 #if defined(CONFIG_VIDEO)
 	conf_disp_pll(24, 1);
-	da8xx_video_init(&lcd_panel, &lcd_cfg, 16);
+	da8xx_video_init(&lcd_panel, &lcd_cfg, 32);
 	enable_lcd();
 #endif
 

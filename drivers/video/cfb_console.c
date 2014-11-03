@@ -1205,9 +1205,9 @@ void video_set_lut(unsigned int, unsigned char, unsigned char, unsigned char)
 
 #define FILL_32BIT_X888RGB(r,g,b) {			\
 	*(unsigned long *)fb =				\
-		SWAP32((unsigned long)(((r<<16) |	\
+		SWAP32((unsigned long)(((r) |	\
 					(g<<8)  |	\
-					 b)));		\
+					 (b<<16))));		\
 	fb += 4;					\
 }
 
