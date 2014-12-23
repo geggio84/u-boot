@@ -598,7 +598,6 @@ void sdram_init(void)
 }
 #endif
 
-#if defined(CONFIG_VIDEO)
 static int set_gpio(int gpio, int state)
 {
 	gpio_request(gpio, "temp");
@@ -608,6 +607,7 @@ static int set_gpio(int gpio, int state)
 	return 0;
 }
 
+#if defined(CONFIG_VIDEO)
 static int enable_backlight(void)
 {
 	set_gpio(50, 1); // GPIO1_18
@@ -664,6 +664,9 @@ int board_init(void)
 	da8xx_video_init(&lcd_panel, &lcd_cfg, 32);
 	enable_lcd();
 #endif
+
+// Enable Power-ON led
+	set_gpio(66, 1); // GPIO2_2
 
 	return 0;
 }

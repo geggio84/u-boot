@@ -86,10 +86,11 @@ static struct module_pin_mux endstop_pin_mux[] = {
 };
 
 static struct module_pin_mux frontpanel_pin_mux[] = {
-	{OFFSET(gpmc_wait0), (MODE(7))},		/* ENC_SW (gpio0_30) */
-	{OFFSET(gpmc_a0), (MODE(7))},		/* ENC_A (gpio1_16) */
-	{OFFSET(xdma_event_intr1), (MODE(7))},		/* ENC_B (gpio0_20) */
-	/*{OFFSET(), (MODE(7)},*/		/* EXT_GPIO0 */
+	{OFFSET(gpmc_wait0), (RXACTIVE | MODE(7))},		/* ENC_SW (gpio0_30) */
+	{OFFSET(gpmc_a0), (RXACTIVE | MODE(7))},		/* ENC_A (gpio1_16) */
+	{OFFSET(xdma_event_intr1), (RXACTIVE | MODE(7))},		/* ENC_B (gpio0_20) */
+	/*{OFFSET(gpmc_be0n_cle), (RXACTIVE | MODE(7))},*/		/* EXT_GPIO0 (gpio2_5) */
+	{OFFSET(gpmc_advn_ale), (RXACTIVE | MODE(7))},		/* EXT_GPIO0 (gpio2_2) */
 	{-1},
 };
 
