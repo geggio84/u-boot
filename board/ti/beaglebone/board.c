@@ -470,12 +470,9 @@ void am33xx_spl_board_init(void)
 
 					while(1){
 						tmp = readl(0x44e3e000 + 0x44);
-						/*sec=readl(0x44e3e000);
-						min=readl(0x44e3e000 + 0x4);
-						printf("Read1 minutes %d seconds %d \n",min,sec);
-						for(i=0; i<1000; i++){
-							udelay(1000);
-						}*/
+						tps65217_reg_read(TPS65217_STATUS,&pmic_status_reg);
+						if (pmic_status_reg & TPS65217_PWR_BTN_BITMASK)
+							break;
 						if((tmp & 0x80) == 0x80){
 							//udelay(100);
 							writel(0x0, (0x44e3e000 + 0x44));
@@ -484,7 +481,6 @@ void am33xx_spl_board_init(void)
 						}
 					}
 
-					return;
 				}
 			}
 			writel(0xFFFFFFFF, (0x44e3e000 + 0x60));
