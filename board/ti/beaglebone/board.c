@@ -178,6 +178,54 @@ static int read_eeprom(struct am335x_baseboard_id *header)
 	return 0;
 }
 
+static int set_gpio(int gpio, int state)
+{
+	gpio_request(gpio, "temp");
+	gpio_direction_output(gpio, state);
+	gpio_set_value(gpio, state);
+	gpio_free(gpio);
+	return 0;
+}
+
+#if defined(CONFIG_VIDEO)
+static int enable_backlight(void)
+{
+	set_gpio(50, 1); // GPIO1_18
+	return 0;
+}
+
+static int enable_lcd(void)
+{
+	set_gpio(115, 1); // GPIO3_19
+	return 0;
+}
+
+// static int enable_pwm(void)
+// {
+	// struct pwmss_regs *pwmss = (struct pwmss_regs *)PWMSS0_BASE;
+	// struct pwmss_ecap_regs *ecap;
+	// int ticks = PWM_TICKS;
+	// int duty = PWM_DUTY;
+
+	// ecap = (struct pwmss_ecap_regs *)AM33XX_ECAP0_BASE;
+	// /* enable clock */
+	// setbits_le32(&pwmss->clkconfig, ECAP_CLK_EN);
+	// /* TimeStam Counter register */
+	// writel(0xdb9, &ecap->tsctr);
+	// /* config period */
+	// writel(ticks - 1, &ecap->cap3);
+	// writel(ticks - 1, &ecap->cap1);
+	// setbits_le16(&ecap->ecctl2,
+		     // (ECTRL2_MDSL_ECAP | ECTRL2_SYNCOSEL_MASK | 0xd0));
+	// /* config duty */
+	// writel(duty, &ecap->cap2);
+	// writel(duty, &ecap->cap4);
+	// /* start */
+	// setbits_le16(&ecap->ecctl2, ECTRL2_CTRSTP_FREERUN);
+	// return 0;
+// }
+#endif
+
 #ifndef CONFIG_SKIP_LOWLEVEL_INIT
 static const struct ddr_data ddr2_data = {
 	.datardsratio0 = ((MT47H128M16RT25E_RD_DQS<<30) |
@@ -598,54 +646,6 @@ void sdram_init(void)
 }
 #endif
 
-static int set_gpio(int gpio, int state)
-{
-	gpio_request(gpio, "temp");
-	gpio_direction_output(gpio, state);
-	gpio_set_value(gpio, state);
-	gpio_free(gpio);
-	return 0;
-}
-
-#if defined(CONFIG_VIDEO)
-static int enable_backlight(void)
-{
-	set_gpio(50, 1); // GPIO1_18
-	return 0;
-}
-
-static int enable_lcd(void)
-{
-	set_gpio(115, 1); // GPIO3_19
-	return 0;
-}
-
-static int enable_pwm(void)
-{
-	struct pwmss_regs *pwmss = (struct pwmss_regs *)PWMSS0_BASE;
-	struct pwmss_ecap_regs *ecap;
-	int ticks = PWM_TICKS;
-	int duty = PWM_DUTY;
-
-	ecap = (struct pwmss_ecap_regs *)AM33XX_ECAP0_BASE;
-	/* enable clock */
-	setbits_le32(&pwmss->clkconfig, ECAP_CLK_EN);
-	/* TimeStam Counter register */
-	writel(0xdb9, &ecap->tsctr);
-	/* config period */
-	writel(ticks - 1, &ecap->cap3);
-	writel(ticks - 1, &ecap->cap1);
-	setbits_le16(&ecap->ecctl2,
-		     (ECTRL2_MDSL_ECAP | ECTRL2_SYNCOSEL_MASK | 0xd0));
-	/* config duty */
-	writel(duty, &ecap->cap2);
-	writel(duty, &ecap->cap4);
-	/* start */
-	setbits_le16(&ecap->ecctl2, ECTRL2_CTRSTP_FREERUN);
-	return 0;
-}
-#endif
-
 /*
  * Basic board specific setup.  Pinmux has been handled already.
  */
@@ -666,7 +666,7 @@ int board_init(void)
 #endif
 
 // Enable Power-ON led
-	set_gpio(66, 1); // GPIO2_2
+	set_gpio(48, 1); // gpio1_16
 
 	return 0;
 }

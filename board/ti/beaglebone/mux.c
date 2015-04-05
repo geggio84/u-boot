@@ -60,37 +60,32 @@ static struct module_pin_mux uart5_pin_mux[] = {
 };
 
 static struct module_pin_mux stepper_pin_mux[] = {
-	{OFFSET(gpmc_ad3), (MODE(7) | PULLUP_EN)},		/* Enable X (gpio1_3) */
-	{OFFSET(gpmc_wen), (MODE(7) | PULLDOWN_EN)},	/* DIR X (gpio2_4) */
-	{OFFSET(gpmc_ad11), (MODE(7) | PULLDOWN_EN)},	/* STEP X (gpio0_27) */
-	{OFFSET(gpmc_ad7), (MODE(7) | PULLUP_EN)},		/* Enable Y (gpio1_7) */
-	{OFFSET(gpmc_ad8), (MODE(7) | PULLDOWN_EN)},	/* DIR Y (gpio0_22) */
-	{OFFSET(gpmc_ad12), (MODE(7) | PULLDOWN_EN)},	/* STEP Y (gpio1_12) */
-	{OFFSET(gpmc_ad2), (MODE(7) | PULLUP_EN)},		/* Enable Z (gpio1_2) */
-	{OFFSET(gpmc_ad10), (MODE(7) | PULLDOWN_EN)},	/* DIR Z (gpio0_26) */
-	{OFFSET(gpmc_ad9), (MODE(7) | PULLDOWN_EN)},	/* STEP Z (gpio0_23) */
-	{OFFSET(gpmc_ad6), (MODE(7) | PULLUP_EN)},		/* Enable E (gpio1_6) */
+	{OFFSET(gpmc_ad13), (MODE(7) | PULLDOWN_EN)},	/* DIR X (gpio1_13) */
+	{OFFSET(gpmc_ad12), (MODE(7) | PULLDOWN_EN)},	/* STEP X (gpio1_12) */
+	{OFFSET(mcasp0_axr1), (MODE(7) | PULLDOWN_EN)},	/* DIR Y (gpio3_20) */
+	{OFFSET(mcasp0_aclkr), (MODE(7) | PULLDOWN_EN)},	/* STEP Y (gpio3_18) */
+	{OFFSET(gpmc_ad9), (MODE(7) | PULLDOWN_EN)},	/* DIR Z (gpio0_23) */
+	{OFFSET(gpmc_ad10), (MODE(7) | PULLDOWN_EN)},	/* STEP Z (gpio0_26) */
 	{OFFSET(gpmc_ad15), (MODE(7) | PULLDOWN_EN)},	/* DIR E (gpio1_15) */
-	{OFFSET(gpmc_be1n), (MODE(7) | PULLDOWN_EN)},	/* STEP E (gpio1_28) */
+	{OFFSET(gpmc_ad14), (MODE(7) | PULLDOWN_EN)},	/* STEP E (gpio1_14) */
+	{OFFSET(gpmc_clk), (MODE(7) | PULLDOWN_EN)},	/* FLAG (gpio2_1) */
 	{-1},
 };
 
 static struct module_pin_mux endstop_pin_mux[] = {
-	{OFFSET(mcasp0_ahclkx), (MODE(7))},		/* END X1 (gpio3_21) */
-	{OFFSET(spi0_d0), (MODE(7))},		/* END X2 (gpio0_3) */
-	{OFFSET(gpmc_a1), (MODE(7))},		/* END Y1 (gpio1_17) */
-	{OFFSET(gpmc_a3), (MODE(7))},		/* END Y2 (gpio1_19) */
-	{OFFSET(gpmc_wpn), (MODE(7))},		/* END Z1 (gpio0_31) */
-	{OFFSET(spi0_sclk), (MODE(7))},		/* END Z2 (gpio0_2) */
+	{OFFSET(gpmc_advn_ale), (MODE(7) | RXACTIVE)},		/* END X1 (gpio2_2) */
+	{OFFSET(gpmc_oen_ren), (MODE(7) | RXACTIVE)},		/* END X2 (gpio2_3) */
+	{OFFSET(gpmc_be0n_cle), (MODE(7) | RXACTIVE)},		/* END Y1 (gpio2_5) */
+	{OFFSET(gpmc_wen), (MODE(7) | RXACTIVE)},		/* END Y2 (gpio2_4) */
+	{OFFSET(gpmc_a3), (MODE(7) | RXACTIVE)},		/* END Z1 (gpio1_19) */
 	{-1},
 };
 
 static struct module_pin_mux frontpanel_pin_mux[] = {
 	{OFFSET(gpmc_wait0), (RXACTIVE | MODE(7))},		/* ENC_SW (gpio0_30) */
-	{OFFSET(gpmc_a0), (RXACTIVE | MODE(7))},		/* ENC_A (gpio1_16) */
-	{OFFSET(xdma_event_intr1), (RXACTIVE | MODE(7))},		/* ENC_B (gpio0_20) */
-	/*{OFFSET(gpmc_be0n_cle), (RXACTIVE | MODE(7))},*/		/* EXT_GPIO0 (gpio2_5) */
-	{OFFSET(gpmc_advn_ale), (RXACTIVE | MODE(7))},		/* EXT_GPIO0 (gpio2_2) */
+	{OFFSET(gpmc_be1n), (RXACTIVE | MODE(7))},		/* ENC_A (gpio1_28) */
+	{OFFSET(gpmc_wpn), (RXACTIVE | MODE(7))},		/* ENC_B (gpio0_31) */
+	{OFFSET(gpmc_a0), (RXACTIVE | MODE(7))},		/* EXT_GPIO0 (gpio1_16) */
 	{-1},
 };
 
@@ -163,16 +158,6 @@ static struct module_pin_mux spi0_pin_mux[] = {
 	{OFFSET(spi0_d1), (MODE(0) | RXACTIVE | PULLUDEN)},	/* SPI0_D1 */
 	{OFFSET(spi0_cs0), (MODE(0) | RXACTIVE |
 			PULLUDEN | PULLUP_EN)},			/* SPI0_CS0 */
-	{-1},
-};
-
-static struct module_pin_mux spi1_pin_mux[] = {
-	{OFFSET(mcasp0_aclkx), (MODE(3) | RXACTIVE | PULLUDEN)},	/* SPI1_SCLK */
-	{OFFSET(mcasp0_fsx), (MODE(3) | RXACTIVE |
-			PULLUDEN | PULLUP_EN)},			/* SPI1_D0 */
-	{OFFSET(mcasp0_axr0), (MODE(3) | RXACTIVE | PULLUDEN)},	/* SPI1_D1 */
-	{OFFSET(mcasp0_ahclkr), (MODE(3) | RXACTIVE |
-			PULLUDEN | PULLUP_EN)},			/* SPI1_CS0 */
 	{-1},
 };
 
@@ -310,7 +295,7 @@ static struct module_pin_mux LCD_pin_mux[] = {
 	{OFFSET(lcd_pclk), MODE(0) },       /* lcd_pclk */
 	{OFFSET(lcd_ac_bias_en), MODE(0) }, /* lcd_en */
 	{OFFSET(mcasp0_fsr), (MODE(7) | PULLUP_EN | RXACTIVE)}, /*LCD DISEN*/
-	{OFFSET(gpmc_a2), MODE(7) | PULLUP_EN | RXACTIVE},
+	{OFFSET(gpmc_a2), MODE(7) | PULLDOWN_EN | RXACTIVE},
 	{-1},
 };
 #endif
@@ -400,14 +385,8 @@ void enable_board_pin_mux(struct am335x_baseboard_id *header)
 	configure_module_pin_mux(LCD_pin_mux);
 #endif
 
-	/* SPI1 */
-	configure_module_pin_mux(spi1_pin_mux);
-
-	/* UART1 */
-	configure_module_pin_mux(uart1_pin_mux);
-
-	/* I2C1 */
-	configure_module_pin_mux(i2c1_pin_mux);
+	/* SPI0 */
+	configure_module_pin_mux(spi0_pin_mux);
 
 	/* GPIO Stepper */
 	configure_module_pin_mux(stepper_pin_mux);
