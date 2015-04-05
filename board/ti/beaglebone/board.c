@@ -390,6 +390,9 @@ void am33xx_spl_board_init(void)
 {
 	struct am335x_baseboard_id header;
 	int mpu_vdd;
+	int i;
+	u32 tmp;
+	u32 sec,min;
 
 	if (read_eeprom(&header) < 0)
 		puts("Could not get board ID.\n");
@@ -421,6 +424,70 @@ void am33xx_spl_board_init(void)
 			if (tps65217_reg_read(TPS65217_STATUS,
 					      &pmic_status_reg))
 				return;
+			/* Check if power button is pressed
+			 * stay on if true
+			 * shutdown if false
+			 */
+			tmp=readl(0x44e3e000 + 0x60);
+			if(tmp == 0x0){
+				if (!(pmic_status_reg & TPS65217_PWR_BTN_BITMASK)) {
+					puts("Power button not pressed: shutdown now\n");
+					if (tps65217_reg_write(TPS65217_PROT_LEVEL_NONE, TPS65217_STATUS, 0x80, 0x80))
+						puts("tps65217_reg_write failure\n");
+					writel(0x3, (0x44e3e000 + 0x78));
+					writel(0x10000, (0x44e3e000 + 0x98)); // Enable PWR_ENABLE_BIT
+					writel(0x10, (0x44e3e000 + 0x48)); // Enable Alarm2 interrupt once
+					for(i=0; i<4; i++){ // Copy hour/day/month/year from RTC to alarm
+						tmp=readl((0x44e3e000 + 0x8)+(i*4));
+						writel(tmp, (0x44e3e000 + 0x88)+(i*4));
+					}
+					// Now set minutes and seconds
+					sec=readl(0x44e3e000);
+					min=readl(0x44e3e000 + 0x4);
+					//printf("Read minutes %d seconds %d \n",min,sec);
+					if((sec & 0xF) > 6){
+						if(((sec & 0xF0)>>4) == 5){
+							sec = (sec & 0xF) - 6;
+							if((min & 0xF) == 9){
+								if(((min & 0xF0)>>4) == 5){
+									min = 0x00;
+								}else{
+									min = (((min & 0xF0) >> 4) + 1) << 4;
+								}
+							}else{
+								min = min + 1;
+							}
+						}else{
+							sec = ((((sec & 0xF0) >> 4) + 1) << 4) + 0x01;
+						}
+					}else{
+						sec = sec + 3;
+					}
+					writel(sec, (0x44e3e000 + 0x80));
+					writel(min, (0x44e3e000 + 0x84));
+					//printf("Write minutes %d seconds %d \n",min,sec);
+					writel(0x1, (0x44e3e000 + 0x40)); // enable RTC
+
+					while(1){
+						tmp = readl(0x44e3e000 + 0x44);
+						/*sec=readl(0x44e3e000);
+						min=readl(0x44e3e000 + 0x4);
+						printf("Read1 minutes %d seconds %d \n",min,sec);
+						for(i=0; i<1000; i++){
+							udelay(1000);
+						}*/
+						if((tmp & 0x80) == 0x80){
+							//udelay(100);
+							writel(0x0, (0x44e3e000 + 0x44));
+							writel(0x0, (0x44e3e000 + 0x48));
+							break;
+						}
+					}
+
+					return;
+				}
+			}
+			writel(0xFFFFFFFF, (0x44e3e000 + 0x60));
 			if (!(pmic_status_reg & TPS65217_PWR_SRC_AC_BITMASK)) {
 				puts("No AC power, disabling frequency switch\n");
 				return;
